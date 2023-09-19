@@ -24,7 +24,7 @@ except ImportError:
 #   |
 #   °-- Defining the variable names:
 
-version     = '1.0.0'
+version     = '1.0.1'
 package     = f'github-webscrapping_{version}_all.tar.gz'
 url_package = f'https://github.com/TheWatcherMultiversal/github-webscrapping/releases/download/v{version}/{package}'
 

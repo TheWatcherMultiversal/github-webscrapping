@@ -31,7 +31,7 @@ parser.add_argument('--version', action='store_true', help='Show the version')
 args = parser.parse_args()
 
 if args.version:
-    print('github-webscrapping 1.0.0')
+    print('github-webscrapping 1.0.1')
     sys.exit()
     
 
@@ -817,6 +817,7 @@ Repository details:
 
         # Disabled buttons
         self.web_button.setEnabled(False)
+        self.clone_button.setEnabled(False)
 
 
     # Change the information of the selected repository.
