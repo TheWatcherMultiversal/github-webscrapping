@@ -31,7 +31,7 @@ parser.add_argument('--version', action='store_true', help='Show the version')
 args = parser.parse_args()
 
 if args.version:
-    print('github-webscrapping 1.0.1')
+    print('github-webscrapping 1.0.2')
     sys.exit()
     
 
@@ -390,6 +390,11 @@ class Ui_MainWindow(object):
         self.return_button = QtWidgets.QPushButton(self.github_profile_window)
         self.return_button.setGeometry(QtCore.QRect(30, 630, 84, 24))
         self.return_button.setObjectName("return_button")
+        self.warn_message_label = QtWidgets.QLabel(self.github_profile_window)
+        self.warn_message_label.setGeometry(QtCore.QRect(850, 630, 191, 31))
+        self.warn_message_label.setText("")
+        self.warn_message_label.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.warn_message_label.setObjectName("warn_message_label")
         self.stackedWidget.addWidget(self.github_profile_window)
         self.gridLayout_2.addWidget(self.stackedWidget, 0, 1, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -571,7 +576,13 @@ Repository details:
 
 
         # Request GitHub Profile:
-        request = requests.get(self.url + self.search_profile_)
+        try:
+            request = requests.get(self.url + self.search_profile_)
+        except:
+            print('Error: Error when performing the search.')
+            QMessageBox.critical(MainWindow, 'Error', 'Error when performing the search, no connection.')
+            return
+
         print('request = Status code:', request.status_code)
 
         if 400 <= request.status_code <= 599:
@@ -949,6 +960,7 @@ Repository details:
 
     # Clone the repository to a selected path:
     def click_clone(self):
+        self.warn_message_label.setText('Clone repo, please wait...')
         repo_title       = self.listWidget.currentItem().text()
         clone_repo       = f'{self.url}{self.profile}/{repo_title}.git'
 
@@ -962,6 +974,8 @@ Repository details:
                 subprocess.run([f"cd '{clone_path}' && git clone {clone_repo}"], check=True, shell=True)
             except subprocess.CalledProcessError:
                 QMessageBox.critical(MainWindow, "Error", 'Error while trying to clone the repository', QMessageBox.Ok)
+        
+        self.warn_message_label.setText('')
 
 # //////////////////////////////////////////////////////////////////////////
 

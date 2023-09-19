@@ -779,6 +779,22 @@
          <string>Return</string>
         </property>
        </widget>
+       <widget class="QLabel" name="warn_message_label">
+        <property name="geometry">
+         <rect>
+          <x>850</x>
+          <y>630</y>
+          <width>191</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+        </property>
+       </widget>
       </widget>
      </widget>
     </item>
