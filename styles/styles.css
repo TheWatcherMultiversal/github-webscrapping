@@ -1,0 +1,68 @@
+/* styles.qss */
+
+/* All window */
+QWidget {
+    background-color: #0d1117;
+    color: #ffffff; 
+}
+
+/* List Widget */
+QListWidget::item {
+    height: 50px;
+}
+
+QListWidget::item:selected {
+    background-color: #070c14; 
+}
+
+/* Group Box */
+QGroupBox {
+    border: 2px solid #30363d;
+    border-radius: 5px;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #0d1117;
+}
+
+QGroupBox:title {
+    background-color: #0d1117;
+    color: rgb(226, 226, 226);
+    font-size: 16px;
+    margin-left: 20px;
+    margin-right: 20px;
+    font-weight: bold;
+}
+
+/* Button clone */
+QPushButton#clone_button {
+    background-color: #238636; 
+    color: #ffffff; 
+    border: none; 
+    padding: 10px 20px; 
+    border-radius: 3px;
+}
+
+QPushButton:hover#clone_button {
+    background-color: #1e7931; 
+}
+
+QPushButton:pressed#clone_button {
+    background-color: #165e27;
+}
+
+/* Button web */
+QPushButton#web_button {
+    background-color: #21262d; 
+    color: #ffffff; 
+    border: none; 
+    padding: 10px 20px; 
+    border-radius: 3px;
+}
+
+QPushButton:hover#web_button {
+    background-color: #1e2229; 
+}
+
+QPushButton:pressed#web_button {
+    background-color: #15181d;
+}
