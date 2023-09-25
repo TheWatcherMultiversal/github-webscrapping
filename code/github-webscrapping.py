@@ -14,15 +14,17 @@
 
 # Import modules:
 from PyQt5 import QtCore, QtGui, QtWidgets
-from bs4 import BeautifulSoup
 from PyQt5.QtWidgets import QMessageBox, QFileDialog
-import json
-import argparse
+from bs4 import BeautifulSoup
 import webbrowser
-import requests
 import subprocess
-import os
+import argparse
+import requests
+import json
+import math
 import sys
+import os
+
 
 
 # Prints the version if the --version argument is passed:
@@ -31,7 +33,7 @@ parser.add_argument('--version', action='store_true', help='Show the version')
 args = parser.parse_args()
 
 if args.version:
-    print('github-webscrapping 1.0.2')
+    print('github-webscrapping 1.0.3')
     sys.exit()
     
 
@@ -125,7 +127,7 @@ class Ui_MainWindow(object):
         self.deleteprofile_button.setObjectName("deleteprofile_button")
         self.horizontalLayout_2.addWidget(self.deleteprofile_button)
         self.groupBox_2 = QtWidgets.QGroupBox(self.mainpage)
-        self.groupBox_2.setGeometry(QtCore.QRect(660, 410, 331, 171))
+        self.groupBox_2.setGeometry(QtCore.QRect(660, 410, 331, 211))
         self.groupBox_2.setObjectName("groupBox_2")
         self.horizontalLayoutWidget_3 = QtWidgets.QWidget(self.groupBox_2)
         self.horizontalLayoutWidget_3.setGeometry(QtCore.QRect(20, 40, 291, 41))
@@ -166,6 +168,11 @@ class Ui_MainWindow(object):
         self.typeaccount_comboBox.addItem("")
         self.typeaccount_comboBox.addItem("")
         self.horizontalLayout_4.addWidget(self.typeaccount_comboBox)
+        self.all_repos_checkBox = QtWidgets.QCheckBox(self.groupBox_2)
+        self.all_repos_checkBox.setGeometry(QtCore.QRect(20, 150, 291, 24))
+        self.all_repos_checkBox.setSizePolicy(sizePolicy)
+        self.all_repos_checkBox.setChecked(False)
+        self.all_repos_checkBox.setObjectName("all_repos_checkBox")
         self.githubimage_label_2 = QtWidgets.QLabel(self.mainpage)
         self.githubimage_label_2.setGeometry(QtCore.QRect(40, 180, 581, 401))
         self.githubimage_label_2.setText("")
@@ -189,6 +196,11 @@ class Ui_MainWindow(object):
         self.label_4.setFont(font)
         self.label_4.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft)
         self.label_4.setObjectName("label_4")
+        self.warn_message_2_label = QtWidgets.QLabel(self.mainpage)
+        self.warn_message_2_label.setGeometry(QtCore.QRect(40, 600, 361, 31))
+        self.warn_message_2_label.setText("")
+        self.warn_message_2_label.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.warn_message_2_label.setObjectName("warn_message_2_label")
         self.stackedWidget.addWidget(self.mainpage)
         self.github_profile_window = QtWidgets.QWidget()
         self.github_profile_window.setObjectName("github_profile_window")
@@ -486,6 +498,7 @@ class Ui_MainWindow(object):
         self.label_6.setText(_translate("MainWindow", "Type of account"))
         self.typeaccount_comboBox.setItemText(0, _translate("MainWindow", "User"))
         self.typeaccount_comboBox.setItemText(1, _translate("MainWindow", "Organization"))
+        self.all_repos_checkBox.setText(_translate("MainWindow", "All repos (it may take a while)"))
         self.label_4.setText(_translate("MainWindow", "View GitHub profiles and access information about their repositories."))
         self.groupBox_3.setTitle(_translate("MainWindow", "Repositories"))
         self.groupBox_4.setTitle(_translate("MainWindow", "Repository details"))
@@ -505,6 +518,7 @@ class Ui_MainWindow(object):
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
         self.actionHelp.setText(_translate("MainWindow", "Help"))
         self.actionHelp.setStatusTip(_translate("MainWindow", "Help"))
+        self.actionHelp.setShortcut(_translate("MainWindow", "F1"))
         self.actionAbout.setText(_translate("MainWindow", "About"))
         self.actionAbout.setStatusTip(_translate("MainWindow", "About"))
 
@@ -524,6 +538,7 @@ class Ui_MainWindow(object):
 Search Parameters:
 - Sort: Sort the repository search.
 - Type of account: Select type of account.
+- All repos: Find all repositories instead of just 30 (slower on profiles with many repositories)
 
 Repository details:
 - Web: Open the selected repository in the browser.        
@@ -536,6 +551,7 @@ Repository details:
 # - Fuctions in mainpage -----------------------------------------------------------------------------------------------------------------------
 
     def click_search_button(self):
+
         # Search Profile:
         self.search_profile_ = str(self.profile_line_edit.text())
         self.search_profile_ = self.search_profile_.replace(" ", "")
@@ -548,6 +564,7 @@ Repository details:
         self.type_account_ = type_account
         sort_              = self.sort_comboBox.currentText()
         saved_search       = self.saveprofile_checkBox.checkState()
+        all_repos          = self.all_repos_checkBox.checkState()
 
 
         # Check if the variable is empty:
@@ -567,11 +584,17 @@ Repository details:
         
         # -- Sort parameter
         if sort_   == "Stars":
-            repositories_url += 'q=&type=all&language=&sort=stargazers'
+            parameter_sort   = 'q=&type=all&language=&sort=stargazers'
+            repositories_url += parameter_sort
+
         elif sort_ == "Last updated":
-            repositories_url += 'q=&type=&language=&sort='
+            parameter_sort   = 'q=&type=&language=&sort='
+            repositories_url += parameter_sort
+
         elif sort_ == "Name":
-            repositories_url += 'q=&type=all&language=&sort=name'
+            parameter_sort   = 'q=&type=all&language=&sort=name'
+            repositories_url += parameter_sort
+
         print(f'Repos URL: {repositories_url}')
 
 
@@ -611,6 +634,7 @@ Repository details:
             print('Error: Resource not found')
             QMessageBox.critical(MainWindow, 'Error', 'Resource not found, try specifying the account type.', QMessageBox.Ok)
             return
+        
         content_repos           = request_repos.text
         self.view_content_repos = BeautifulSoup(content_repos, 'lxml')
 
@@ -689,17 +713,46 @@ Repository details:
                 print('Description not found')
 
 
+            # -> Display the full list of repositories if true
+            if all_repos != 0:
+                
+                # --> Get the total number of repositories
+                total_repos = int(view_content.find('span', {'class' : 'Counter', 'data-view-component' : 'true'}).get('title'))
+
+                # --> If it exceeds a quantity of 30 repositories
+                if total_repos > 30:
+                    total_pages_repos = math.ceil(total_repos / 30)#------> Obtains the number of pages to search
+
+                    # ---> Conditional statement to avoid errors in the search
+                    if sort_ == 'Last update':
+                        url_extra_repos = [f'https://github.com/{self.profile}?language=&page={n}&q=&sort=&tab=repositories' for n in range(1, total_pages_repos + 1)]
+                    else:
+                        url_extra_repos = [f'https://github.com/{self.profile}?language=&page={n}&{parameter_sort}&tab=repositories' for n in range(1, total_pages_repos + 1)]
+                    
+                    content_repos = []
+
+                    # ---> Fetches the search from all pages of the repositories to be searched
+                    for i in url_extra_repos:
+                        request_repos = requests.get(i)
+                        print(f'{i} status code: {request.status_code}')
+                        content_repos.append(request_repos.text)
+
+                    # ---> Switch from 'lxml' to 'html.parser' to avoid errors in searching for elements
+                    content_repos_text = '\n'.join(content_repos)
+                    self.view_content_repos = BeautifulSoup(content_repos_text, 'html.parser')
+               
+
             # -> Set repositories
             self.repositories_list      = self.view_content_repos.find_all('a', {'itemprop': 'name codeRepository'})
             self.repositories_list_info = self.view_content_repos.find_all('div', class_="col-10 col-lg-9 d-inline-block")
+
             if self.repositories_list != []:
                 for i in self.repositories_list:
                     item = i.get_text()
-                    item = item.replace("\n", "")
-                    item = item.replace(" ", "")
+                    item = item.replace("\n", "").replace(" ", "")
                     print(f'Add item in listWidget: {item}')
                     self.listWidget.addItem(f'{item}')
-                    
+
             else:
                 print(f'This profile has no repositories')
 
@@ -771,6 +824,35 @@ Repository details:
                 self.description_label.setText(f'{description}')
             else:
                 print('Description not found')
+
+
+            # -> Display the full list of repositories if true
+            if all_repos != 0:
+                
+                # --> Gets the number of repository pages
+                total_pages_repos = self.view_content_repos.find('em', class_='current')
+
+                # --> If it doesn't find the page numbers in the repositories
+                if total_pages_repos != None:
+                    total_pages_repos = int(total_pages_repos.get('data-total-pages'))
+
+                    # ---> Conditional statement to avoid errors in the search
+                    if sort_ == 'Last update':
+                        url_extra_repos = [f'https://github.com/orgs/{self.profile}/repositories?language=&page={n}&q=&sort=&type=all' for n in range(1, total_pages_repos + 1)]
+                    else:
+                        url_extra_repos = [f'https://github.com/orgs/{self.profile}/repositories?language=&page={n}&{parameter_sort}' for n in range(1, total_pages_repos + 1)]
+                    
+                    content_repos = []
+
+                    # ---> Fetches the search from all pages of the repositories to be searched
+                    for i in url_extra_repos:
+                        request_repos = requests.get(i)
+                        print(f'{i} status code: {request.status_code}')
+                        content_repos.append(request_repos.text)
+
+                    # ---> Switch from 'lxml' to 'html.parser' to avoid errors in searching for elements
+                    content_repos_text = '\n'.join(content_repos)
+                    self.view_content_repos = BeautifulSoup(content_repos_text, 'html.parser')
 
 
             # -> Set repositories
@@ -912,8 +994,9 @@ Repository details:
 
 
             # -> Set star
-            stars = self.view_content_repos.find('a', {'href': f'/{self.profile}/{repo_title}/stargazers'})
-            if stars != None:
+            stars = Elements.find('a', {'class' : 'no-wrap Link Link--muted mr-3'})
+            not_stars = Elements.find('span', {'class' : 'mr-3 color-fg-muted', 'data-view-component' : 'true'})
+            if not_stars == None and stars != None:
                 stars = stars.get_text()
                 stars = stars.replace("\n", "")
                 stars = stars.replace(" ", "")
