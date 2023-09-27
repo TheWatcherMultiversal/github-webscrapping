@@ -81,7 +81,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "About"))
         self.label.setText(_translate("MainWindow", "GitHub-WebScrapping"))
-        self.label_3.setText(_translate("MainWindow", "Version 1.0.3"))
+        self.label_3.setText(_translate("MainWindow", "Version 1.0.4"))
         self.label_2.setText(_translate("MainWindow", "GitHub web scraping helps to make queries to profiles on GitHub and visualize information about their repositories."))
         self.label_4.setText(_translate("MainWindow", "© Angel M 2021 - 2023"))
         self.label_5.setText(_translate("MainWindow", "GNU GENERAL PUBLIC LICENSE v3"))

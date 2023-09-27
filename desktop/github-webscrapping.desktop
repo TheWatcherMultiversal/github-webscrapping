@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=GitHub WebScrapping
+GenericName=GitHub WebScrapping
+Comment=GitHub WebScrapping
+TryExec=github-webscrapping
+Exec=github-webscrapping
+Icon=/usr/share/github-webscrapping/icons/github-webscrapping.svg
+Type=Application
+Terminal=false
+Categories=Network;
+StartupNotify=true
+Keywords=github;webscrapping;github-webscrapping
+;

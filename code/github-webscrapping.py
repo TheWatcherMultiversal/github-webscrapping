@@ -33,7 +33,7 @@ parser.add_argument('--version', action='store_true', help='Show the version')
 args = parser.parse_args()
 
 if args.version:
-    print('github-webscrapping 1.0.3')
+    print('github-webscrapping 1.0.4')
     sys.exit()
     
 
@@ -765,10 +765,15 @@ Repository details:
 
             # -> Set the profile information
             self.profile   = view_content.find('h1', class_='h2 lh-condensed').get_text()
-            self.profile   = self.profile.replace(" ", "")
             self.profile   = self.profile.replace("\n", "")
             print(f'profile_label = {self.profile}')
+
+            # -> For Links
             self.profile_label.setText(f"{self.profile}")
+            self.profile   = view_content.find('a', {'class' : 'UnderlineNav-item selected'}).get('href')
+            self.profile   = self.profile.replace(" ", "")
+            self.profile   = self.profile.replace("\n", "").replace("/", "")
+            self.profile   = self.profile.replace("/", "")
             
 
             # -> Set the followers
@@ -996,6 +1001,9 @@ Repository details:
             # -> Set star
             stars = Elements.find('a', {'class' : 'no-wrap Link Link--muted mr-3'})
             not_stars = Elements.find('span', {'class' : 'mr-3 color-fg-muted', 'data-view-component' : 'true'})
+            if not_stars != None:
+                not_stars = not_stars.find('svg', class_="octicon octicon-star")
+
             if not_stars == None and stars != None:
                 stars = stars.get_text()
                 stars = stars.replace("\n", "")
