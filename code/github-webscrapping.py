@@ -33,7 +33,7 @@ parser.add_argument('--version', action='store_true', help='Show the version')
 args = parser.parse_args()
 
 if args.version:
-    print('github-webscrapping 1.0.4')
+    print('github-webscrapping 1.0.5')
     sys.exit()
     
 
@@ -1017,7 +1017,9 @@ Repository details:
 
             # -> Set license
             license_ = Elements.find('span', {'class': 'mr-3', 'data-view-component': 'true'})
-            if license_ != None:
+            not_license = license_.find('svg', {'class' : 'octicon octicon-law mr-1', 'data-view-component' : 'true'})
+
+            if not_license != None and license_ != None:
                 license_ = license_.get_text()
                 license_ = license_.replace("\n", "")
                 print(f'license = {license_}')

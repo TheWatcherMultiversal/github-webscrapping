@@ -20,6 +20,9 @@ class Ui_MainWindow(object):
         MainWindow.resize(491, 302)
         MainWindow.setMinimumSize(QtCore.QSize(491, 302))
         MainWindow.setMaximumSize(QtCore.QSize(491, 302))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("/usr/share/github-webscrapping/icons/github-webscrapping.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)#-----> Icon App
+        MainWindow.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.label = QtWidgets.QLabel(self.centralwidget)
@@ -81,7 +84,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "About"))
         self.label.setText(_translate("MainWindow", "GitHub-WebScrapping"))
-        self.label_3.setText(_translate("MainWindow", "Version 1.0.4"))
+        self.label_3.setText(_translate("MainWindow", "Version 1.0.5"))
         self.label_2.setText(_translate("MainWindow", "GitHub web scraping helps to make queries to profiles on GitHub and visualize information about their repositories."))
         self.label_4.setText(_translate("MainWindow", "© Angel M 2021 - 2023"))
         self.label_5.setText(_translate("MainWindow", "GNU GENERAL PUBLIC LICENSE v3"))
